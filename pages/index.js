@@ -121,6 +121,7 @@ export default function HomePage() {
         const result = await res.json();
         console.log('no errors');
         // window.location.href = 'https://www.piataseverineana.ro';
+        alert("Anuntul a fost trimis cu succes!")
       })
       .catch((error) => {
         console.log(error);
