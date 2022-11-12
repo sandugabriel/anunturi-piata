@@ -4,17 +4,20 @@ sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
 
 async function sendEmail(req, res) {
   const values = req.body;
-  let datesString = '';
-  console.log(values.dates)
+  console.log(values)
+  let datesString = "";
+  console.log(values.dates);
   values.dates.forEach((date) => {
-    datesString = datesString + date.toString() + ' ';
-  })
+    datesString = datesString + date.toString() + " ";
+  });
+  const today = values.today.toString();
+  const tomorrow = values.tomorrow.toString();
+  const id = (Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
   try {
-    // console.log("REQ.BODY", req.body);
     await sendgrid.send({
-      to: 'sandugabriel97@gmail.com', // Your email where you'll receive emails
+      to: "piataseverineana@gmail.com", // Your email where you'll receive emails
       from: "sandugabriel97@gmail.com", // your website email address here
-      subject: 'Anunt nou!',
+      subject: "Anunt nou!",
       html: `
       <h1>Anunt nou</h1>
       <p>Nume: ${values.name}</p>
@@ -27,7 +30,29 @@ async function sendEmail(req, res) {
       `,
     });
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(error.statusCode || 500).json({ error: error.message });
+  }
+
+  try {
+    await sendgrid.send({
+      to: values.email, // Your email where you'll receive emails
+      from: "sandugabriel97@gmail.com", // your website email address here
+      subject: "Anunt Piata Severineana",
+      templateId: "d-6b8e572ecb3a4287a810278403cfd848",
+      dynamic_template_data: {
+        "id": id,
+        "today": today,
+        "tomorrow": tomorrow,
+        "companyName": values.companyName,
+        "name": values.name,
+        "email": values.email,
+        "product": `${values.type} ${values.publication}`,
+        "price": values.price
+      }
+    });
+  } catch (error) {
+    // console.log(error);
     return res.status(error.statusCode || 500).json({ error: error.message });
   }
 

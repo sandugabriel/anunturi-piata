@@ -59,6 +59,7 @@ export default function HomePage() {
     name: '',
     email: '',
     address: '',
+    companyName: ''
   });
 
   const [dates, setDates] = useState([]);
@@ -66,7 +67,7 @@ export default function HomePage() {
   const [price, setPrice] = useState('');
   const [isCalculated, setIsCalculated] = useState(false);
 
-  const { anunt, type, publication, name, email, address } = values;
+  const { anunt, type, publication, name, email, address, companyName } = values;
 
   React.useEffect(() => {
     const prices = {
@@ -97,12 +98,18 @@ export default function HomePage() {
 
   const handleSubmit= async (e) => {
     e.preventDefault();
+
+    const today = new Date()
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+
     const dateStrings = [];
     dates.forEach((date) => {
       dateStrings.push(date.toString());
     });
     await fetch('/api/sendgrid', {
       body: JSON.stringify({
+        companyName: companyName,
         name: name,
         email: email,
         address: address,
@@ -111,6 +118,8 @@ export default function HomePage() {
         type: type,
         dates: dateStrings,
         price: price,
+        today: today,
+        tomorrow: tomorrow
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -119,12 +128,13 @@ export default function HomePage() {
     })
       .then(async (res) => {
         const result = await res.json();
-        console.log('no errors');
-        // window.location.href = 'https://www.piataseverineana.ro';
+        console.log(result)
+        // console.log('no errors');
         alert("Anuntul a fost trimis cu succes!")
       })
       .catch((error) => {
         console.log(error);
+        alert("Te rog incearca din nou, s-a produs o eroare!")
       });
   };
 
@@ -145,7 +155,7 @@ export default function HomePage() {
 
       <main>
         <div className='flex flex-col items-center '>
-          <div className='text-4xl font-bold'>Site anunturi</div>
+          {/* <div className='text-4xl font-bold'>Site anunturi</div> */}
           <div className='mt-5 w-full max-w-md'>
             <form
               className='mb-4 w-full rounded bg-white px-8 pt-6 pb-8 shadow-xl'
@@ -164,7 +174,7 @@ export default function HomePage() {
                   onChange={handleChange}
                   name='anunt'
                   rows={8}
-                  className='focus:shadow-outline inset-0 mb-3 w-full cursor-auto appearance-none rounded border border-red-500  leading-tight text-gray-700 shadow focus:outline-none'
+                  className='focus:shadow-outline inset-0 mb-3 w-full cursor-auto appearance-none rounded border border-blue-500 leading-tight text-gray-700 shadow focus:outline-none'
                 ></textarea>
               </div>
               <div className='mb-6'>
@@ -233,6 +243,24 @@ export default function HomePage() {
                   htmlFor='default-input'
                   className='mb-2 block text-sm font-bold text-gray-700'
                 >
+                  Nume firma
+                </label>
+                <input
+                  id='companyName'
+                  value={companyName}
+                  onChange={handleChange}
+                  name='companyName'
+                  type='text'
+                  className='focus:shadow-outline inset-0 w-full cursor-auto appearance-none rounded border border-blue-500  leading-tight text-gray-700 shadow focus:outline-none'
+                ></input>
+                
+              </div>
+
+              <div className='mb-6'>
+                <label
+                  htmlFor='default-input'
+                  className='mb-2 block text-sm font-bold text-gray-700'
+                >
                   Nume complet
                 </label>
                 <input
@@ -242,7 +270,7 @@ export default function HomePage() {
                   onChange={handleChange}
                   name='name'
                   type='text'
-                  className='focus:shadow-outline peer inset-0 w-full cursor-auto appearance-none rounded border border-red-500  leading-tight text-gray-700 shadow focus:outline-none'
+                  className='focus:shadow-outline peer inset-0 w-full cursor-auto appearance-none rounded border border-blue-500 leading-tight text-gray-700 shadow focus:outline-none'
                 ></input>
                 <p className='invisible font-light text-red-700 peer-invalid:visible'>
                   Te rog completeaza numele!
@@ -263,7 +291,7 @@ export default function HomePage() {
                   onChange={handleChange}
                   name='email'
                   type='email'
-                  className='focus:shadow-outline peer inset-0 w-full cursor-auto appearance-none rounded border border-red-500  leading-tight text-gray-700 shadow focus:outline-none'
+                  className='focus:shadow-outline peer inset-0 w-full cursor-auto appearance-none rounded border border-blue-500  leading-tight text-gray-700 shadow focus:outline-none'
                 ></input>
                 <p className='invisible font-light text-red-700 peer-invalid:visible'>
                   Te rog completeaza un email valid!
@@ -275,7 +303,7 @@ export default function HomePage() {
                   htmlFor='default-input'
                   className='mb-2 block text-sm font-bold text-gray-700'
                 >
-                  Addresa
+                  Adresa
                 </label>
                 <input
                   required
@@ -284,12 +312,14 @@ export default function HomePage() {
                   onChange={handleChange}
                   name='address'
                   type='text'
-                  className='focus:shadow-outline peer inset-0 w-full cursor-auto appearance-none rounded border border-red-500  leading-tight text-gray-700 shadow focus:outline-none'
+                  className='focus:shadow-outline peer inset-0 w-full cursor-auto appearance-none rounded border border-blue-500  leading-tight text-gray-700 shadow focus:outline-none'
                 ></input>
                 <p className='invisible font-light text-red-700 peer-invalid:visible'>
                   Te rog completeaza adresa!
                 </p>
               </div>
+
+              
 
               <div className='flex items-center justify-between pt-5'>
                 <button
